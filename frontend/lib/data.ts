@@ -6,25 +6,25 @@ import { Task, User, Priority, Status, Notification } from "@/lib/types";
 // Mock users
 export const users: User[] = [
   {
-    id: "user-1",
+    _id: "user-1",
     name: "Demo User",
     email: "demo@example.com",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo@example.com",
   },
   {
-    id: "user-2",
+    _id: "user-2",
     name: "Jane Smith",
     email: "jane@example.com",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane@example.com",
   },
   {
-    id: "user-3",
+    _id: "user-3",
     name: "Alex Johnson",
     email: "alex@example.com",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=alex@example.com",
   },
   {
-    id: "user-4",
+    _id: "user-4",
     name: "Sam Taylor",
     email: "sam@example.com",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=sam@example.com",
@@ -35,7 +35,7 @@ export const users: User[] = [
 export const generateTasks = (userId: string): Task[] => {
   return [
     {
-      id: "task-1",
+      _id: "task-1",
       title: "Complete project proposal",
       description: "Draft and finalize the proposal for the new client project",
       dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
@@ -47,9 +47,9 @@ export const generateTasks = (userId: string): Task[] => {
       updatedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
     },
     {
-      id: "task-2",
+      _id: "task-2",
       title: "Review design mockups",
-      description: "Review the design mockups for the new website and provide feedback",
+      description: "Review the design mockups for the new website and prov_ide feedback",
       dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
       priority: Priority.MEDIUM,
       status: Status.IN_PROGRESS,
@@ -59,7 +59,7 @@ export const generateTasks = (userId: string): Task[] => {
       updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
     },
     {
-      id: "task-3",
+      _id: "task-3",
       title: "Test application features",
       description: "Test the new features in the application and report any bugs",
       dueDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago (overdue)
@@ -71,7 +71,7 @@ export const generateTasks = (userId: string): Task[] => {
       updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     },
     {
-      id: "task-4",
+      _id: "task-4",
       title: "Update documentation",
       description: "Update the user documentation to reflect the latest changes",
       dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
@@ -83,7 +83,7 @@ export const generateTasks = (userId: string): Task[] => {
       updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     },
     {
-      id: "task-5",
+      _id: "task-5",
       title: "Prepare presentation",
       description: "Prepare a presentation for the client meeting next week",
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
@@ -95,7 +95,7 @@ export const generateTasks = (userId: string): Task[] => {
       updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     },
     {
-      id: "task-6",
+      _id: "task-6",
       title: "Review pull requests",
       description: "Review and approve pending pull requests in the codebase",
       dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day from now
@@ -107,9 +107,9 @@ export const generateTasks = (userId: string): Task[] => {
       updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
     },
     {
-      id: "task-7",
+      _id: "task-7",
       title: "Optimize database queries",
-      description: "Identify and optimize slow database queries in the application",
+      description: "_identify and optimize slow database queries in the application",
       dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days from now
       priority: Priority.MEDIUM,
       status: Status.COMPLETED,

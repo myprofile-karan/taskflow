@@ -68,7 +68,7 @@ export default function LoginPage() {
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              &ldquo;TaskFlow has transformed how our team manages projects. We've increased productivity by 30% and never miss deadlines anymore.&rdquo;
+              &ldquo;TaskFlow has transformed how our team manages projects. We&apos;ve increased productivity by 30% and never miss deadlines anymore.&rdquo;
             </p>
             <footer className="text-sm">Sarah Chen, Project Manager</footer>
           </blockquote>
@@ -131,7 +131,7 @@ export default function LoginPage() {
                 )}
               </Button>
               <p className="text-center text-sm text-muted-foreground">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Link href="/register" className="text-primary hover:underline">
                   Sign up
                 </Link>

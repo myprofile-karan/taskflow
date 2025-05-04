@@ -21,7 +21,7 @@ import { useAuth } from "@/components/auth-provider";
 
 interface TaskEditFormProps {
   onSubmit: (task: Task) => void;
-  task?: Task; 
+  task?: any; 
   type?: string;
 }
 

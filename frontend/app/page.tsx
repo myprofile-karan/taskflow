@@ -74,7 +74,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold">Smart Dashboard</h3>
               <p className="text-muted-foreground">
-                Get a quick overview of all your tasks, see what's due soon, and track your team's progress.
+                Get a quick overview of all your tasks, see what&apos;s due soon, and track your team&apos;s progress.
               </p>
             </div>
           </div>

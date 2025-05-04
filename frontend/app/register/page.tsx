@@ -79,7 +79,7 @@ export default function RegisterPage() {
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              &ldquo;TaskFlow has transformed how our team manages projects. We've increased productivity by 30% and never miss deadlines anymore.&rdquo;
+              &ldquo;TaskFlow has transformed how our team manages projects. We&apos;ve increased productivity by 30% and never miss deadlines anymore.&rdquo;
             </p>
             <footer className="text-sm">Sarah Chen, Project Manager</footer>
           </blockquote>

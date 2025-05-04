@@ -29,14 +29,18 @@ export async function POST(req: Request) {
     console.log("createdUser---", createdUser);
 
     // 🔔 Notify the user via WebSocket server HTTP endpoint
-    await fetch("http://localhost:4000/notify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        toUserId: task.assignedTo,
-        message: `${createdUser.name} assigned you a new task: ${task.title}`,
-      }),
-    });
+    try {
+      await fetch("http://localhost:4000/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          toUserId: task?.assignedTo,
+          message: `${createdUser?.name} assigned you a new task: ${task?.title}`,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to notify user:", error);
+    }
 
     return NextResponse.json(task, { status: 201 });
   } catch (error) {

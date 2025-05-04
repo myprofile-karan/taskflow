@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 
 interface DashboardHeaderProps {
   search?: string;
-  setSearch?: (search: string) => void;
+  setSearch?: any;
   unreadNotifications?: number;
 }
 

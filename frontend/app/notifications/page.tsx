@@ -38,11 +38,11 @@ export default function NotificationsPage() {
   };
 
   const getTaskById = (id: string) => {
-    return tasks.find((task) => task.id === id);
+    return tasks.find((task) => task._id === id);
   };
 
   const getUserById = (id: string) => {
-    return users.find((user) => user.id === id);
+    return users.find((user) => user._id === id);
   };
 
   return (
@@ -67,7 +67,7 @@ export default function NotificationsPage() {
                 <BellOff className="h-12 w-12 text-muted mb-4" />
                 <h3 className="text-lg font-medium mb-2">No notifications</h3>
                 <p className="text-muted-foreground">
-                  You don't have any notifications yet.
+                  You don&apos;t have any notifications yet.
                 </p>
               </div>
             ) : (
