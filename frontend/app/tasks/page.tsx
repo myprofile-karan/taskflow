@@ -15,7 +15,6 @@ import { useAuth } from "@/components/auth-provider";
 import { isPast, parseISO, startOfToday, endOfDay, addDays } from "date-fns";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
-import { Spinner } from "@/components/ui/spinner";
 
 export default function TasksPage() {
   const { user } = useAuth();
@@ -23,7 +22,6 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState<TaskFilter>({
     search: "",
     status: null,
@@ -31,21 +29,18 @@ export default function TasksPage() {
     dueDate: null,
   });
   const [showFilters, setShowFilters] = useState(false);
-  const filteredTasks  = tasks.filter(task=> task.assignedTo === user?._id)
+  const currentUserTasks  = tasks.filter(task=> task.assignedTo === user?._id)
 
-  // fetch all users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        setIsLoading(true)
         const { data } = await axios.get("/api/users");
         setUsers(data);
       } catch (err) {
         console.error("Failed to fetch users:", err);
-      }finally{
-        setIsLoading(false)
       }
     };
+
     fetchUsers();
   }, []);
   
@@ -67,7 +62,7 @@ export default function TasksPage() {
   //   try {
   //     const res = await axios.post("/api/tasks", {
   //       ...newTask,
-  //       assignedTo: selectedUser?._id, // Use `_id` from MongoDB
+  //       assignedTo: selecteduser?._id, // Use `_id` from MongoDB
   //     });
   //     const created = res.data;
 
@@ -88,7 +83,6 @@ export default function TasksPage() {
   // };
 
   const handleUpdateTask = async (updatedData: Record<string, any>) => {
-    console.log(updatedData)
   try {
     const res = await axios.put(`/api/tasks/${updatedData._id}`, updatedData);
     if (res.status !== 200) {
@@ -144,52 +138,52 @@ export default function TasksPage() {
 
   // Apply filters
 
-  // const filteredTasks = tasks.filter((task) => {
-  //   // Search filter
-  //   if (
-  //     filters.search &&
-  //     !task.title.toLowerCase().includes(filters.search.toLowerCase()) &&
-  //     !task.description.toLowerCase().includes(filters.search.toLowerCase())
-  //   ) {
-  //     return false;
-  //   }
+  const taskFilters = currentUserTasks?.filter((task) => {
+    // Search filter
+    if (
+      filters.search &&
+      !task.title.toLowerCase().includes(filters.search.toLowerCase()) &&
+      !task.description.toLowerCase().includes(filters.search.toLowerCase())
+    ) {
+      return false;
+    }
 
-  //   // Status filter
-  //   if (filters.status && task.status !== filters.status) {
-  //     return false;
-  //   }
+    // Status filter
+    if (filters.status && task.status !== filters.status) {
+      return false;
+    }
 
-  //   // Priority filter
-  //   if (filters.priority && task.priority !== filters.priority) {
-  //     return false;
-  //   }
+    // Priority filter
+    if (filters.priority && task.priority !== filters.priority) {
+      return false;
+    }
 
-  //   // Due date filter
-  //   if (filters.dueDate) {
-  //     const dueDate = parseISO(task.dueDate);
-  //     const today = startOfToday();
+    // Due date filter
+    if (filters.dueDate) {
+      const dueDate = parseISO(task.dueDate);
+      const today = startOfToday();
       
-  //     switch (filters.dueDate) {
-  //       case "today":
-  //         if (!(dueDate >= today && dueDate <= endOfDay(today))) {
-  //           return false;
-  //         }
-  //         break;
-  //       case "week":
-  //         if (!(dueDate > today && dueDate <= addDays(today, 7))) {
-  //           return false;
-  //         }
-  //         break;
-  //       case "overdue":
-  //         if (!(isPast(dueDate) && task.status !== Status.COMPLETED)) {
-  //           return false;
-  //         }
-  //         break;
-  //     }
-  //   }
+      switch (filters.dueDate) {
+        case "today":
+          if (!(dueDate >= today && dueDate <= endOfDay(today))) {
+            return false;
+          }
+          break;
+        case "week":
+          if (!(dueDate > today && dueDate <= addDays(today, 7))) {
+            return false;
+          }
+          break;
+        case "overdue":
+          if (!(isPast(dueDate) && task.status !== Status.COMPLETED)) {
+            return false;
+          }
+          break;
+      }
+    }
 
-  //   return true;
-  // });
+    return true;
+  });
   
 
   return (
@@ -203,18 +197,40 @@ export default function TasksPage() {
         <div className="container px-4 py-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold">My Tasks</h1>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowFilters(!showFilters)}
+                className="gap-1"
+              >
+                <Filter className="h-4 w-4" />
+                Filters
+              </Button>
+              {/* <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="mr-1 h-4 w-4" />
+                    New Task
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create Task</DialogTitle>
+                  </DialogHeader>
+                  <TaskEditForm onSubmit={handleCreateTask} type="add" />
+                </DialogContent>
+              </Dialog> */}
+            </div>
           </div>
-          
-          
 
           {showFilters && (
             <div className="mb-6">
               <TaskFilters filters={filters} setFilters={setFilters} />
             </div>
           )}
-        {isLoading ? <Spinner /> :
+
           <div className="space-y-4">
-            {filteredTasks.length === 0 ? (
+            {taskFilters.length === 0 ? (
               <Card>
                 <CardContent className="p-12 text-center">
                   <CheckCircle className="mx-auto h-12 w-12 mb-4 text-muted" />
@@ -231,7 +247,7 @@ export default function TasksPage() {
                 </CardContent>
               </Card>
             ) : (
-              filteredTasks.map((task) => (
+              taskFilters.map((task) => (
                 <TaskCard
                   key={task._id}
                   task={task}
@@ -243,7 +259,6 @@ export default function TasksPage() {
               ))
             )}
           </div>
-        }
         </div>
       </main>
     </div>

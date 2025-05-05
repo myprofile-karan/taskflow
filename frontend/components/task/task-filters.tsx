@@ -21,21 +21,21 @@ export function TaskFilters({ filters, setFilters }: TaskFiltersProps) {
   const handleStatusChange = (value: string | undefined) => {
     setFilters({
       ...filters,
-      status: value as Status | null,
+      status: value === "all" ? null : (value as Status | null),
     });
   };
 
   const handlePriorityChange = (value: string | undefined) => {
     setFilters({
       ...filters,
-      priority: value as Priority | null,
+      priority: value === "all" ? null : (value as Priority | null),
     });
   };
 
   const handleDueDateChange = (value: string | undefined) => {
     setFilters({
       ...filters,
-      dueDate: value as 'all' | 'today' | 'week' | 'overdue' | null,
+      dueDate: value === "all" ? null : (value as 'today' | 'week' | 'overdue' | null),
     });
   };
 
@@ -56,54 +56,57 @@ export function TaskFilters({ filters, setFilters }: TaskFiltersProps) {
         <div className="space-y-2">
           <Label>Status</Label>
           <Select
-            value={filters.status || ""}
+            value={filters.status || "all"}
             onValueChange={handleStatusChange}
           >
             <SelectTrigger>
               <SelectValue placeholder="Any status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any status</SelectItem>
+              <SelectItem value="all">Any status</SelectItem>
               <SelectItem value={Status.TODO}>To Do</SelectItem>
               <SelectItem value={Status.IN_PROGRESS}>In Progress</SelectItem>
               <SelectItem value={Status.COMPLETED}>Completed</SelectItem>
             </SelectContent>
           </Select>
         </div>
+
         <div className="space-y-2">
           <Label>Priority</Label>
           <Select
-            value={filters.priority || ""}
+            value={filters.priority || "all"}
             onValueChange={handlePriorityChange}
           >
             <SelectTrigger>
               <SelectValue placeholder="Any priority" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any priority</SelectItem>
+              <SelectItem value="all">Any priority</SelectItem>
               <SelectItem value={Priority.LOW}>Low</SelectItem>
               <SelectItem value={Priority.MEDIUM}>Medium</SelectItem>
               <SelectItem value={Priority.HIGH}>High</SelectItem>
             </SelectContent>
           </Select>
         </div>
+
         <div className="space-y-2">
           <Label>Due Date</Label>
           <Select
-            value={filters.dueDate || ""}
+            value={filters.dueDate || "all"}
             onValueChange={handleDueDateChange}
           >
             <SelectTrigger>
               <SelectValue placeholder="Any time" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any time</SelectItem>
+              <SelectItem value="all">Any time</SelectItem>
               <SelectItem value="today">Due today</SelectItem>
               <SelectItem value="week">Due this week</SelectItem>
               <SelectItem value="overdue">Overdue</SelectItem>
             </SelectContent>
           </Select>
         </div>
+
         <div className="flex items-end">
           {hasActiveFilters && (
             <Button variant="outline" size="sm" onClick={clearFilters} className="gap-1">
