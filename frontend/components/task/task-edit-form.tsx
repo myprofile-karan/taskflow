@@ -23,10 +23,10 @@ interface TaskEditFormProps {
   onSubmit: (task: Task) => void;
   task?: any; 
   type?: string;
+  isLoading?: boolean;
 }
 
-export function TaskEditForm({ task, onSubmit, type }: TaskEditFormProps) {
-  // console.log(task, "----------")
+export function TaskEditForm({ task, onSubmit, type, isLoading }: TaskEditFormProps) {
   const [formData, setFormData] = useState<Partial<Task>>(
     task || {
       title: "",
@@ -37,10 +37,8 @@ export function TaskEditForm({ task, onSubmit, type }: TaskEditFormProps) {
       assignedTo: "",
     }
   );
-  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const { user } = useAuth();
-console.log("user----",user)
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -57,7 +55,6 @@ console.log("user----",user)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
       const now = new Date().toISOString();
       const newTask = {
@@ -69,7 +66,6 @@ console.log("user----",user)
       } as Task;
 
       onSubmit(newTask);
-      setLoading(false);
   };
 
   
@@ -168,8 +164,8 @@ console.log("user----",user)
       </div>
 
       <div className="flex justify-end gap-2 pt-2">
-        <Button type="submit" disabled={loading}>
-          {loading ? (
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Saving...

@@ -16,6 +16,7 @@ import { format, isPast, parseISO, startOfToday, endOfToday, addDays } from "dat
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 import { NotificationHandler } from "@/hooks/notify";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -24,13 +25,21 @@ export default function DashboardPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   
   // fetch all tasks
   useEffect(() => {
     const fetchTasks = async () => {
       if (!user) return;
-      const res = await axios.get("/api/tasks");
-      setTasks(res.data);
+      try {
+        setIsLoading(true);
+        const res = await axios.get("/api/tasks");
+        setTasks(res.data);
+      } catch (error) {
+        console.error("Failed to fetch tasks:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchTasks();
   }, [user]);
@@ -39,13 +48,15 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setIsLoading(true)
         const { data } = await axios.get("/api/users");
         setUsers(data);
       } catch (err) {
         console.error("Failed to fetch users:", err);
+      }finally{
+        setIsLoading(false)
       }
     };
-
     fetchUsers();
   }, []);
   
@@ -71,8 +82,8 @@ export default function DashboardPage() {
   };
   
   const handleUpdateTask = async (updatedData: Record<string, any>) => {
-      console.log("updatedData",updatedData)
     try {
+      setIsLoading(true)
       const res = await axios.put(`/api/tasks/${updatedData._id}`, updatedData);
       if (res.status !== 200) {
         throw new Error(res.data.error || "Failed to update task");
@@ -89,6 +100,8 @@ export default function DashboardPage() {
         variant: "destructive",
       });  
       return null;
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -155,7 +168,6 @@ export default function DashboardPage() {
         unreadNotifications={unreadNotifications}
       />
 
-
       <main className="flex-1">
         <div className="container px-4 py-6">
           <div className="flex items-center justify-between mb-6">
@@ -171,11 +183,12 @@ export default function DashboardPage() {
                 <DialogHeader>
                   <DialogTitle>Create Task</DialogTitle>
                 </DialogHeader>
-                <TaskEditForm onSubmit={handleCreateTask} type="add" />
+                <TaskEditForm onSubmit={handleCreateTask} type="add" isLoading={isLoading} />
               </DialogContent>
             </Dialog>
           </div>
-
+          {isLoading ? <Spinner /> : (
+            <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardHeader className="pb-2">
@@ -234,16 +247,16 @@ export default function DashboardPage() {
                       <p>No tasks due today.</p>
                     </CardContent>
                   </Card>
-                ) : (
-                  todayTasks.map((task) => (
-                    <TaskCard
+                ) : ( 
+                    todayTasks.map((task) => (
+                      <TaskCard
                       key={task._id}
                       task={task}
                       onStatusChange={handleStatusChange}
                       onUpdate={handleUpdateTask}
-                    />
-                  ))
-                )}
+                      />
+                    ))
+                  )}
               </div>
             </div>
 
@@ -266,6 +279,7 @@ export default function DashboardPage() {
                     </CardContent>
                   </Card>
                 ) : (
+                  isLoading ? <Spinner /> :
                   upcomingTasks.slice(0, 3).map((task) => (
                     <TaskCard
                       key={task._id}
@@ -299,6 +313,8 @@ export default function DashboardPage() {
                 ))}
               </div>
             </div>
+          )}
+            </>
           )}
         </div>
       </main>

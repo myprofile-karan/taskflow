@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
     // 🔔 Notify the user via WebSocket server HTTP endpoint
     try {
-      await fetch("http://localhost:4000/notify", {
+      await fetch("https://taskflow-backend-socket.onrender.com/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

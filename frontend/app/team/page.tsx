@@ -15,6 +15,7 @@ import { generateTasks, generateNotifications } from "@/lib/data";
 import { useAuth } from "@/components/auth-provider";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function TeamPage() {
   const { user: currentUser } = useAuth();
@@ -22,29 +23,37 @@ export default function TeamPage() {
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
   const [selectedUser, setselectedUser] = useState<User | null>(null);
   const [users, setUsers] = useState<{ _id: string; name: string, email: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(false)
 
-  // console.log("selectedUser",selectedUser)
-
+  // fetch all tasks
   useEffect(() => {
     const fetchTasks = async () => {
-      if (!currentUser) return;
-      const res = await axios.get("/api/tasks");
-      setTasks(res.data);
+      try {
+        setIsLoading(true);
+        const res = await axios.get("/api/tasks");
+        setTasks(res.data);
+      } catch (error) {
+        console.error("Failed to fetch tasks:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchTasks();
   }, [currentUser]);
 
-
+  // fetch all users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setIsLoading(true)
         const { data } = await axios.get("/api/users");
         setUsers(data);
       } catch (err) {
         console.error("Failed to fetch users:", err);
+      }finally{
+        setIsLoading(false)
       }
     };
-
     fetchUsers();
   }, []);
 
@@ -103,7 +112,7 @@ export default function TeamPage() {
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold">Team Members</h1>
           </div>
-
+          {isLoading ? <Spinner /> :
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {users.map((user) => (
               <Card key={user?._id} className="overflow-hidden">
@@ -111,10 +120,10 @@ export default function TeamPage() {
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-12 w-12">
-                        {/* <AvatarImage src={user?.image} />
+                        {/* <AvatarImage src={user?.image} /> */}
                         <AvatarFallback>
                           {user.name.substring(0, 2).toUpperCase()}
-                        </AvatarFallback> */}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
                         <CardTitle className="text-lg">{user.name}</CardTitle>
@@ -167,6 +176,7 @@ export default function TeamPage() {
               </Card>
             ))}
           </div>
+          }
         </div>
       </main>
 

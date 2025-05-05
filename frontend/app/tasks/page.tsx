@@ -15,6 +15,7 @@ import { useAuth } from "@/components/auth-provider";
 import { isPast, parseISO, startOfToday, endOfDay, addDays } from "date-fns";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function TasksPage() {
   const { user } = useAuth();
@@ -22,6 +23,7 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState<TaskFilter>({
     search: "",
     status: null,
@@ -31,16 +33,19 @@ export default function TasksPage() {
   const [showFilters, setShowFilters] = useState(false);
   const filteredTasks  = tasks.filter(task=> task.assignedTo === user?._id)
 
+  // fetch all users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setIsLoading(true)
         const { data } = await axios.get("/api/users");
         setUsers(data);
       } catch (err) {
         console.error("Failed to fetch users:", err);
+      }finally{
+        setIsLoading(false)
       }
     };
-
     fetchUsers();
   }, []);
   
@@ -198,38 +203,16 @@ export default function TasksPage() {
         <div className="container px-4 py-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold">My Tasks</h1>
-            {/* <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowFilters(!showFilters)}
-                className="gap-1"
-              >
-                <Filter className="h-4 w-4" />
-                Filters
-              </Button>
-              <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="mr-1 h-4 w-4" />
-                    New Task
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create Task</DialogTitle>
-                  </DialogHeader>
-                  <TaskEditForm onSubmit={handleCreateTask} type="add" />
-                </DialogContent>
-              </Dialog>
-            </div> */}
           </div>
+          
+          
 
           {showFilters && (
             <div className="mb-6">
               <TaskFilters filters={filters} setFilters={setFilters} />
             </div>
           )}
-
+        {isLoading ? <Spinner /> :
           <div className="space-y-4">
             {filteredTasks.length === 0 ? (
               <Card>
@@ -260,6 +243,7 @@ export default function TasksPage() {
               ))
             )}
           </div>
+        }
         </div>
       </main>
     </div>

@@ -9,7 +9,7 @@ let socket: any;
 
 export const NotificationHandler = ({ userId }: { userId: string }) => {
   useEffect(() => {
-    socket = io("http://localhost:4000");
+    socket = io("https://taskflow-backend-socket.onrender.com/");
 
     socket.on("connect", () => {
       console.log("🔗 Connected to WebSocket");
