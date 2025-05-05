@@ -125,7 +125,7 @@ export const generateTasks = (userId: string): Task[] => {
 export const generateNotifications = (userId: string): Notification[] => {
   return [
     {
-      id: "notif-1",
+      _id: "notif-1",
       userId,
       taskId: "task-2",
       message: "You have been assigned to a new task: Review design mockups",
@@ -133,7 +133,7 @@ export const generateNotifications = (userId: string): Notification[] => {
       createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
     },
     {
-      id: "notif-2",
+      _id: "notif-2",
       userId,
       taskId: "task-4",
       message: "You have been assigned to a new task: Update documentation",
@@ -141,7 +141,7 @@ export const generateNotifications = (userId: string): Notification[] => {
       createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
     },
     {
-      id: "notif-3",
+      _id: "notif-3",
       userId,
       taskId: "task-5",
       message: "You have been assigned to a new task: Prepare presentation",
@@ -149,7 +149,7 @@ export const generateNotifications = (userId: string): Notification[] => {
       createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
     },
     {
-      id: "notif-4",
+      _id: "notif-4",
       userId,
       taskId: "task-3",
       message: "Task 'Test application features' due date is approaching",
