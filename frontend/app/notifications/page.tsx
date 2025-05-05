@@ -10,6 +10,7 @@ import { CheckCircle, BellOff } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import Link from "next/link";
+import axios from "axios";
 
 export default function NotificationsPage() {
   const { user } = useAuth();
@@ -17,16 +18,24 @@ export default function NotificationsPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   
   useEffect(() => {
-    if (user) {
-      setNotifications(generateNotifications(user.id));
-      setTasks(generateTasks(user.id));
-    }
+    const fetchNotifications = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(`/api/notification/${user?._id}`);
+          setNotifications(response.data);
+          console.log(response)
+        } catch (error) {
+          console.error("Failed to fetch notifications:", error);
+        }
+      }
+    };
+    fetchNotifications();
   }, [user]);
 
   const markAsRead = (id: string) => {
     setNotifications((prevNotifications) =>
       prevNotifications.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification
+        notification._id === id ? { ...notification, read: true } : notification
       )
     );
   };
@@ -42,7 +51,7 @@ export default function NotificationsPage() {
   };
 
   const getUserById = (id: string) => {
-    return users.find((user) => user._id === id);
+    return users.find((user) => user?._id === id);
   };
 
   return (
@@ -78,7 +87,7 @@ export default function NotificationsPage() {
                   const creator = task ? getUserById(task.createdBy) : null;
                   
                   return (
-                    <div key={notification.id}>
+                    <div key={notification._id}>
                       <div className={`flex items-start gap-4 py-4 px-2 ${notification.read ? "" : "bg-muted/30"}`}>
                         <div className="flex-shrink-0 mt-1">
                           {notification.read ? (
@@ -101,7 +110,7 @@ export default function NotificationsPage() {
                             <Button 
                               variant="ghost" 
                               size="sm"
-                              onClick={() => markAsRead(notification.id)}
+                              onClick={() => markAsRead(notification._id)}
                             >
                               <CheckCircle className="h-4 w-4 mr-1" />
                               Mark as read

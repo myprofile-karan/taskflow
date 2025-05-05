@@ -31,7 +31,7 @@ export type Task = {
 };
 
 export type Notification = {
-  id: string;
+  _id: string;
   userId: string;
   taskId: string;
   message: string;

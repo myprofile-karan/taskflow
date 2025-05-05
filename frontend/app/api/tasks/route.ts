@@ -1,4 +1,5 @@
 import { connectDB } from "@/lib/db";
+import { Notification } from "@/models/Notification";
 import { Task } from "@/models/Tasks";
 import { User } from "@/models/User";
 import { NextResponse } from "next/server";
@@ -23,10 +24,18 @@ export async function POST(req: Request) {
   try {
     await connectDB();
     const data = await req.json();
+    console.log("data", data)
     const task = await Task.create(data);
 
     const createdUser = await User.findById(task.createdBy);
     console.log("createdUser---", createdUser);
+
+    Notification.create({
+      userId: task.assignedTo,
+      taskId: task._id,
+      message: `${createdUser?.name} assigned you a new task: ${task?.title}`,
+      read: false,
+    })   
 
     // 🔔 Notify the user via WebSocket server HTTP endpoint
     try {

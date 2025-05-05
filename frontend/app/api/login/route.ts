@@ -19,12 +19,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
-    const token = generateToken({ id: user._id, email: user.email });
+    const token = generateToken({ id: user?._id, email: user.email });
 
     return NextResponse.json({
       token,
       user: {
-        id: user._id,
+        _id: user?._id,
         name: user.name,
         email: user.email,
         image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.email)}`

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { TaskCard } from "@/components/task/task-card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Priority, Status, Task } from "@/lib/types";
+import { Priority, Status, Task, User } from "@/lib/types";
 import { Calendar, CheckCircle, Clock, Plus, AlertCircle } from "lucide-react";
 import { generateTasks, generateNotifications } from "@/lib/data";
 import { TaskEditForm } from "@/components/task/task-edit-form";
@@ -19,11 +19,13 @@ import { NotificationHandler } from "@/hooks/notify";
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  console.log("user-----", user)
+  // console.log("user-----", user)
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
   
+  // fetch all tasks
   useEffect(() => {
     const fetchTasks = async () => {
       if (!user) return;
@@ -32,6 +34,20 @@ export default function DashboardPage() {
     };
     fetchTasks();
   }, [user]);
+
+  // fetch all users
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data } = await axios.get("/api/users");
+        setUsers(data);
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      }
+    };
+
+    fetchUsers();
+  }, []);
   
 
   const handleCreateTask = async (newTask: Task) => {
@@ -97,7 +113,7 @@ export default function DashboardPage() {
   };
   
 
-  const unreadNotifications = user ? generateNotifications(user.id).filter(n => !n.read).length : 0;
+  const unreadNotifications = user ? generateNotifications(user?._id).filter(n => !n.read).length : 0;
 
   // Filter tasks for different sections
   const todayTasks = tasks?.filter((task) => {
@@ -131,7 +147,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {user?.id && <NotificationHandler userId={user.id} />}
+      {user?._id && <NotificationHandler userId={user?._id} />}
 
       <DashboardHeader 
         search={search}
@@ -276,6 +292,7 @@ export default function DashboardPage() {
                   <TaskCard
                     key={task._id}
                     task={task}
+                    users={users}
                     onStatusChange={handleStatusChange}
                     onUpdate={handleUpdateTask}
                   />

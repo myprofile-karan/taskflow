@@ -20,7 +20,7 @@ export default function TeamPage() {
   const { user: currentUser } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setselectedUser] = useState<User | null>(null);
   const [users, setUsers] = useState<{ _id: string; name: string, email: string }[]>([]);
 
   // console.log("selectedUser",selectedUser)
@@ -49,7 +49,7 @@ export default function TeamPage() {
   }, []);
 
   const unreadNotifications = currentUser 
-    ? generateNotifications(currentUser.id).filter(n => !n.read).length 
+    ? generateNotifications(currentUser?._id).filter(n => !n.read).length 
     : 0;
 
     const handleCreateTask = async (newTask: Task) => {
@@ -58,7 +58,7 @@ export default function TeamPage() {
       try {
         const res = await axios.post("/api/tasks", {
           ...newTask,
-          assignedTo: selectedUser._id, // Use `_id` from MongoDB
+          assignedTo: selectedUser?._id, // Use `_id` from MongoDB
         });
         const created = res.data;
 
@@ -91,7 +91,7 @@ export default function TeamPage() {
   };
 
   const openNewTaskDialog = (user: User) => {
-    setSelectedUser(user);
+    setselectedUser(user);
     setIsNewTaskDialogOpen(true);
   };
 
@@ -106,7 +106,7 @@ export default function TeamPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {users.map((user) => (
-              <Card key={user._id} className="overflow-hidden">
+              <Card key={user?._id} className="overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
@@ -143,11 +143,11 @@ export default function TeamPage() {
                   <div className="flex items-center justify-between mt-2">
                     <div>
                       <Badge variant="outline" className="mr-1">
-                        {getTasksForUser(user._id).length} Tasks
+                        {getTasksForUser(user?._id).length} Tasks
                       </Badge>
-                      {getPendingTasksCount(user._id) > 0 && (
+                      {getPendingTasksCount(user?._id) > 0 && (
                         <Badge variant="secondary">
-                          {getPendingTasksCount(user._id)} Pending
+                          {getPendingTasksCount(user?._id)} Pending
                         </Badge>
                       )}
                     </div>

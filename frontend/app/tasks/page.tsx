@@ -29,6 +29,7 @@ export default function TasksPage() {
     dueDate: null,
   });
   const [showFilters, setShowFilters] = useState(false);
+  const filteredTasks  = tasks.filter(task=> task.assignedTo === user?._id)
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -56,10 +57,30 @@ export default function TasksPage() {
     setFilters(prev => ({ ...prev, search }));
   }, [search]);
 
-  const handleCreateTask = (newTask: Task) => {
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-    setIsNewTaskDialogOpen(false);
-  };
+  
+  // const handleCreateTask = async (newTask: Task) => {
+  //   try {
+  //     const res = await axios.post("/api/tasks", {
+  //       ...newTask,
+  //       assignedTo: selectedUser?._id, // Use `_id` from MongoDB
+  //     });
+  //     const created = res.data;
+
+  //     setTasks((prevTasks) => [...prevTasks, res.data]);
+  //     setIsNewTaskDialogOpen(false);
+  //     toast({
+  //       title: "Task Created",
+  //       description: `"${created.title}" has been added successfully.`,
+  //     });
+  //   } catch (error) {
+  //     toast({
+  //       title: "Failed to Create Task",
+  //       description: "Something went wrong while creating the task.",
+  //       variant: "destructive",
+  //     });
+  //     console.error("Failed to create task:", error);
+  //   }
+  // };
 
   const handleUpdateTask = async (updatedData: Record<string, any>) => {
     console.log(updatedData)
@@ -84,7 +105,6 @@ export default function TasksPage() {
 };
 
   const handleDelete = async (taskId: string) => {
-    console.log(taskId)
     try {
       const res = await axios.delete(`/api/tasks/${taskId}`);
       console.log("response", res)
@@ -93,7 +113,8 @@ export default function TasksPage() {
       toast({
         title: "Task Deleted",
         description: `"${created}" has been added successfully.`,
-      });      return true;
+      });    
+        return true;
     } catch (err: any) {
       toast({
         title: "Failed to Delete Task",
@@ -114,13 +135,10 @@ export default function TasksPage() {
     );
   };
 
-  const unreadNotifications = user ? generateNotifications(user.id).filter(n => !n.read).length : 0;
-
-  
+  const unreadNotifications = user ? generateNotifications(user?._id).filter(n => !n.read).length : 0;
 
   // Apply filters
 
-  const filteredTasks  = tasks.filter(task=> task.assignedTo === user?.id)
   // const filteredTasks = tasks.filter((task) => {
   //   // Search filter
   //   if (
@@ -180,7 +198,7 @@ export default function TasksPage() {
         <div className="container px-4 py-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold">My Tasks</h1>
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <Button 
                 variant="outline" 
                 onClick={() => setShowFilters(!showFilters)}
@@ -203,7 +221,7 @@ export default function TasksPage() {
                   <TaskEditForm onSubmit={handleCreateTask} type="add" />
                 </DialogContent>
               </Dialog>
-            </div>
+            </div> */}
           </div>
 
           {showFilters && (

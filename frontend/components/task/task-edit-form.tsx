@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/date-picker";
-import { Priority, Status, Task } from "@/lib/types";
+import { Priority, Status, Task, User } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 import axios from "axios"
 import { useAuth } from "@/components/auth-provider";
@@ -38,9 +38,9 @@ export function TaskEditForm({ task, onSubmit, type }: TaskEditFormProps) {
     }
   );
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const { user } = useAuth();
-
+console.log("user----",user)
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -63,8 +63,8 @@ export function TaskEditForm({ task, onSubmit, type }: TaskEditFormProps) {
       const newTask = {
         ...formData,
         id: task?._id,
-        createdBy: user?.id || "",
-        createdAt: task?.createdAt || "",
+        createdBy: user?._id || "",
+        // createdAt: task?.createdAt || "",
         updatedAt: now,
       } as Task;
 
@@ -159,7 +159,7 @@ export function TaskEditForm({ task, onSubmit, type }: TaskEditFormProps) {
           </SelectTrigger>
           <SelectContent>
             {users.map((user) => (
-              <SelectItem key={user._id} value={user._id}>
+              <SelectItem key={user?._id} value={user?._id}>
                 {user.name}
               </SelectItem>
             ))}

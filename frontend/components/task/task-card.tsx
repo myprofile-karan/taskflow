@@ -26,12 +26,10 @@ export function TaskCard({  task, users, onStatusChange, onDelete, onUpdate }: T
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   // console.log("users",users)
-  // console.log("task",task)
+  console.log("task",task)
 
-  const assignedUser = users?.find((u: any) => u._id === task.assignedTo);
-  const createdByUser = users?.find((u:any) => u._id === task.createdBy);
-
-  console.log(assignedUser, createdByUser, "----------")
+  const assignedUser = users?.find((u: any) => u._id === task?.assignedTo);
+  const createdByUser = users?.find((u:any) => u._id === task?.createdBy);
   
   const dueDate = task.dueDate ? parseISO(task.dueDate) : new Date();
   const isOverdue = isPast(dueDate) && task.status !== Status.COMPLETED;

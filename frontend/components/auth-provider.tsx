@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 type User = {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   image?: string;
@@ -65,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const userData = await res.json();
       setUser(userData.user);
+      console.log("login", userData)
       localStorage.setItem("user", JSON.stringify(userData.user));
       router.push("/dashboard");
     } catch (error) {
@@ -92,6 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const userData = await res.json();
+      console.log("register", userData)
       setUser(userData.user);
       localStorage.setItem("user", JSON.stringify(userData.user));
       router.push("/login");
