@@ -101,7 +101,7 @@ export default function RegisterPage() {
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
-                  placeholder="John Doe"
+                  placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className={errors.name ? "border-destructive" : ""}
@@ -115,7 +115,7 @@ export default function RegisterPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={errors.email ? "border-destructive" : ""}
@@ -128,6 +128,7 @@ export default function RegisterPage() {
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
+                  placeholder="******"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

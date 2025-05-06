@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { TaskCard } from "@/components/task/task-card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Priority, Status, Task, User } from "@/lib/types";
+import { Notification, Priority, Status, Task, User } from "@/lib/types";
 import { Calendar, CheckCircle, Clock, Plus, AlertCircle } from "lucide-react";
 import { generateTasks, generateNotifications } from "@/lib/data";
 import { TaskEditForm } from "@/components/task/task-edit-form";
@@ -26,6 +26,8 @@ export default function DashboardPage() {
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
   
   // fetch all tasks
   useEffect(() => {
@@ -60,6 +62,21 @@ export default function DashboardPage() {
     fetchUsers();
   }, []);
   
+  // fetch user notifications
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(`/api/notification/${user?._id}`);
+          setNotifications(response.data);
+          console.log(response)
+        } catch (error) {
+          console.error("Failed to fetch notifications:", error);
+        }
+      }
+    };
+    fetchNotifications();
+  }, [user]);
 
   const handleCreateTask = async (newTask: Task) => {
     try {
@@ -125,11 +142,13 @@ export default function DashboardPage() {
     }
   };
   
-
-  const unreadNotifications = user ? generateNotifications(user?._id).filter(n => !n.read).length : 0;
+  const unreadNotifications = user ? notifications?.filter(n => !n.read).length : 0;
+  const filteredTasks = tasks?.filter(item=> item.assignedTo === user?._id)
+  console.log(filteredTasks,"filteredTasks") 
+  console.log(tasks,"tasks") 
 
   // Filter tasks for different sections
-  const todayTasks = tasks?.filter((task) => {
+  const todayTasks = filteredTasks?.filter((task) => {
     if (!task?.dueDate) return false;
     try {
       const dueDate = parseISO(task.dueDate);
@@ -139,14 +158,13 @@ export default function DashboardPage() {
     }
   });
   
-
-  const upcomingTasks = tasks.filter((task) => {
+  const upcomingTasks = filteredTasks?.filter((task) => {
     if (!task?.dueDate) return false;
     const dueDate = parseISO(task.dueDate);
     return dueDate > endOfToday() && dueDate <= addDays(new Date(), 7) && task.status !== Status.COMPLETED;
   });
   
-  const overdueTasks = tasks.filter((task) => {
+  const overdueTasks = filteredTasks?.filter((task) => {
     if (!task?.dueDate) return false;
     const dueDate = parseISO(task.dueDate);
     return isPast(dueDate) && task.status !== Status.COMPLETED;
@@ -154,9 +172,9 @@ export default function DashboardPage() {
   
 
   // Task summary stats
-  const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(task => task.status === Status.COMPLETED).length;
-  const inProgressTasks = tasks.filter(task => task.status === Status.IN_PROGRESS).length;
+  const totalTasks = filteredTasks?.length;
+  const completedTasks = filteredTasks?.filter(task => task.status === Status.COMPLETED).length;
+  const inProgressTasks = filteredTasks?.filter(task => task.status === Status.IN_PROGRESS).length;
 
   return (
     <div className="flex min-h-screen flex-col">

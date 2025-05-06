@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import { User } from "@/models/User";
 import bcrypt from "bcryptjs";
 import { generateToken } from "@/lib/jwt";
+import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   try {
@@ -20,9 +21,16 @@ export async function POST(req: Request) {
     }
 
     const token = generateToken({ id: user?._id, email: user.email });
-
+    
+    // Set the token in an HTTP-only cookie
+    const cookieStore = cookies();
+    cookieStore.set({
+      name: "auth_token",
+      value: token,
+      httpOnly: true,
+    });
+    
     return NextResponse.json({
-      token,
       user: {
         _id: user?._id,
         name: user.name,
@@ -31,6 +39,7 @@ export async function POST(req: Request) {
       },
     });
   } catch (err) {
+    console.error("Login error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { TaskEditForm } from "@/components/task/task-edit-form";
-import { User, Task, Status } from "@/lib/types";
+import { User, Task, Status, Notification } from "@/lib/types";
 import { Mail, MoreHorizontal, Plus } from "lucide-react";
 import { generateTasks, generateNotifications } from "@/lib/data";
 import { useAuth } from "@/components/auth-provider";
@@ -24,6 +24,8 @@ export default function TeamPage() {
   const [selectedUser, setselectedUser] = useState<User | null>(null);
   const [users, setUsers] = useState<{ _id: string; name: string, email: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false)
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
 
   // fetch all tasks
   useEffect(() => {
@@ -57,9 +59,21 @@ export default function TeamPage() {
     fetchUsers();
   }, []);
 
-  const unreadNotifications = currentUser 
-    ? generateNotifications(currentUser?._id).filter(n => !n.read).length 
-    : 0;
+    // fetch user notifications
+    useEffect(() => {
+      const fetchNotifications = async () => {
+        if (currentUser) {
+          try {
+            const response = await axios.get(`/api/notification/${currentUser?._id}`);
+            setNotifications(response.data);
+            console.log(response)
+          } catch (error) {
+            console.error("Failed to fetch notifications:", error);
+          }
+        }
+      };
+      fetchNotifications();
+    }, [currentUser]);
 
     const handleCreateTask = async (newTask: Task) => {
       if (!selectedUser) return;
@@ -87,6 +101,8 @@ export default function TeamPage() {
       }
     };
     
+    const unreadNotifications = currentUser ? notifications?.filter(n => !n.read).length : 0;
+
 
   const getTasksForUser = (userId: string) => {
     return tasks.filter(task => task.assignedTo === userId);

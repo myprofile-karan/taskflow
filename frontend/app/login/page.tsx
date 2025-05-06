@@ -91,7 +91,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder="Enter you email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={errors.email ? "border-destructive" : ""}
@@ -110,6 +110,7 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type="password"
+                  placeholder="******"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={errors.password ? "border-destructive" : ""}

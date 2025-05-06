@@ -8,7 +8,7 @@ import { TaskCard } from "@/components/task/task-card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { TaskEditForm } from "@/components/task/task-edit-form";
 import { TaskFilters } from "@/components/task/task-filters";
-import { Task, Status, Priority, TaskFilter, User } from "@/lib/types";
+import { Task, Status, Priority, TaskFilter, User, Notification } from "@/lib/types";
 import { CheckCircle, Plus, Filter } from "lucide-react";
 import { generateTasks, generateNotifications } from "@/lib/data";
 import { useAuth } from "@/components/auth-provider";
@@ -30,6 +30,7 @@ export default function TasksPage() {
   });
   const [showFilters, setShowFilters] = useState(false);
   const currentUserTasks  = tasks.filter(task=> task.assignedTo === user?._id)
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -53,34 +54,25 @@ export default function TasksPage() {
     fetchTasks();
   }, [user]);
 
+    // fetch user notifications
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(`/api/notification/${user?._id}`);
+          setNotifications(response.data);
+          console.log(response)
+        } catch (error) {
+          console.error("Failed to fetch notifications:", error);
+        }
+      }
+    };
+    fetchNotifications();
+  }, [user]);
+
   useEffect(() => {
     setFilters(prev => ({ ...prev, search }));
   }, [search]);
-
-  
-  // const handleCreateTask = async (newTask: Task) => {
-  //   try {
-  //     const res = await axios.post("/api/tasks", {
-  //       ...newTask,
-  //       assignedTo: selecteduser?._id, // Use `_id` from MongoDB
-  //     });
-  //     const created = res.data;
-
-  //     setTasks((prevTasks) => [...prevTasks, res.data]);
-  //     setIsNewTaskDialogOpen(false);
-  //     toast({
-  //       title: "Task Created",
-  //       description: `"${created.title}" has been added successfully.`,
-  //     });
-  //   } catch (error) {
-  //     toast({
-  //       title: "Failed to Create Task",
-  //       description: "Something went wrong while creating the task.",
-  //       variant: "destructive",
-  //     });
-  //     console.error("Failed to create task:", error);
-  //   }
-  // };
 
   const handleUpdateTask = async (updatedData: Record<string, any>) => {
   try {
@@ -134,7 +126,7 @@ export default function TasksPage() {
     );
   };
 
-  const unreadNotifications = user ? generateNotifications(user?._id).filter(n => !n.read).length : 0;
+  const unreadNotifications = user ? notifications?.filter(n => !n.read).length : 0;
 
   // Apply filters
 

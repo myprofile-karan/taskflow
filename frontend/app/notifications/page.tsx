@@ -32,18 +32,51 @@ export default function NotificationsPage() {
     fetchNotifications();
   }, [user]);
 
-  const markAsRead = (id: string) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notification) =>
-        notification._id === id ? { ...notification, read: true } : notification
-      )
-    );
+  const markAsRead = async (id: string) => {
+    try {
+      const response = await axios.put(`/api/notification/${id}`, {}, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.status !== 200) {
+        throw new Error('Failed to update notification');
+      }
+      // If the server update is successful, update the local state
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notification) =>
+          notification._id === id ? { ...notification, read: true } : notification
+        )
+      );
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notification) => ({ ...notification, read: true }))
-    );
+  const markAllAsRead = async () => {
+    try {
+      const response = await fetch('/api/notification', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?._id }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mark all notifications as read');
+      }
+
+      const data = await response.json();
+      
+      // Update local state to reflect that all notifications are read
+      setNotifications(prevNotifications =>
+        prevNotifications.map(notification => ({ ...notification, read: true }))
+      );
+      
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    } 
   };
 
   const getTaskById = (id: string) => {
