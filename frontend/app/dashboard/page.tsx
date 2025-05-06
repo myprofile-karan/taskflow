@@ -169,6 +169,7 @@ export default function DashboardPage() {
     const dueDate = parseISO(task.dueDate);
     return isPast(dueDate) && task.status !== Status.COMPLETED;
   });
+  const createdTasks = tasks?.filter((task) => task.createdBy === user?._id);
   
 
   // Task summary stats
@@ -310,9 +311,10 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-
+          
+          <div className="flex justify-between gap-5">
           {overdueTasks.length > 0 && (
-            <div className="mt-8">
+            <div className="mt-8 w-full">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold flex items-center text-destructive">
                   <AlertCircle className="mr-2 h-5 w-5" />
@@ -332,6 +334,28 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
+          {createdTasks.length > 0 && (
+            <div className="mt-8 w-full">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold flex items-center">
+                <Clock className="mr-2 h-5 w-5" />
+                Created Tasks
+                </h2>
+              </div>
+              <div className="space-y-4">
+                {createdTasks.map((task) => (
+                  <TaskCard
+                    key={task._id}
+                    task={task}
+                    users={users}
+                    onStatusChange={handleStatusChange}
+                    onUpdate={handleUpdateTask}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+            </div>
             </>
           )}
         </div>
